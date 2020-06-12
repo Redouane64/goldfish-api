@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Delete, Param, Body, Patch, Options, Req, Res } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Param, Body, Patch, Options, Req, Res, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UsersService } from './users.service';
 import { User } from './interfaces/user.interface';
@@ -17,13 +17,23 @@ export class UsersController {
 
     @Get(":id")
     getOne(@Param('id') id: string): User {
-        return this.usersService.getOne(id);
+        const user = this.usersService.getOne(id);
+        if (!user) {
+            throw new NotFoundException();
+        }
+
+        return user;
     }
 
     @Patch(":id")
     update(@Param("id") id: string, @Body() data: UpdateUserDto): User {
         const user = <User>{ name: data.name };
-        return this.usersService.update(id, user);
+        const updatedUser = this.usersService.update(id, user);
+        if (!updatedUser) {
+            throw new NotFoundException();
+        }
+
+        return updatedUser;
     }
 
     @Post()
@@ -34,7 +44,12 @@ export class UsersController {
 
     @Delete(":id")
     delete(@Param("id") id: string): User {
-        return this.usersService.delete(id);
+        const user = this.usersService.delete(id);
+        if (!user) {
+            throw new NotFoundException();
+        }
+
+        return user;
     }
 
     @Options()
