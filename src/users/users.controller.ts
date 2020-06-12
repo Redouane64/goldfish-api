@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Delete, Param, Body, Patch } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Param, Body, Patch, Options, Req, Res } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UsersService } from './users.service';
 import { User } from './interfaces/user.interface';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { Response } from 'express';
 
 @Controller("users")
 export class UsersController {
@@ -34,5 +35,12 @@ export class UsersController {
     @Delete(":id")
     delete(@Param("id") id: string): User {
         return this.usersService.delete(id);
+    }
+
+    @Options()
+    acceptVerbs(@Res() res: Response): void {
+        res.header("allow", "GET, POST, PATCH, DELETE, OPTIONS")
+            .status(204)
+            .send();
     }
 }
