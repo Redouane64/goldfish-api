@@ -1,49 +1,49 @@
 import { Injectable } from '@nestjs/common';
-import { User } from './interfaces/user.interface';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from './entities/user.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UsersService {
-    private users: User[] = [
-        {
-            id: "201",
-            name: "Jack Black",
-            createdAt: Date()
-        }
-    ]
 
-    getAll(): User[] {
-        return this.users;
+    constructor(@InjectRepository(User) private usersRepo: Repository<User>) { }
+
+    getAll(): Promise<User[]> {
+        return this.usersRepo.find();
     }
 
-    getOne(id: string): User | undefined {
-        return this.users.find(u => u.id === id);
+    getOne(id: string): Promise<User | undefined> {
+        return this.usersRepo.findOne(id);
     }
 
-    create(user: User): User {
-        user.createdAt = Date();
-        this.users.push(user);
-        return user;
+    create(data: { firstName: string, lastName: string }): Promise<User> {
+        const user = new User();
+        user.firstName = data.firstName;
+        user.lastName = data.lastName;
+
+        return this.usersRepo.save(user)
     }
 
-    update(id: string, user: User): User | undefined {
-        const userToUpdate: User | undefined = this.users.find(u => u.id === id);
-        if (userToUpdate) {
-            userToUpdate.name = user.name;
-            return userToUpdate;
+    async update(id: string, data: { firstName: string, lastName: string }): Promise<User | undefined> {
+        const user = await this.usersRepo.findOne(id);
+
+        if (user) {
+            user.firstName = data.firstName;
+            user.lastName = data.lastName;
+
+            await this.usersRepo.save(user);
+            return user;
         }
 
         return undefined;
     }
 
-    delete(id: string): User | undefined {
-        const userToDelete: User | undefined = this.users.find(u => u.id === id);
-        if (userToDelete) {
-            const idx = this.users.indexOf(userToDelete);
-            const deleted: User[] = this.users.splice(idx, 1);
-
-            return deleted[0];
+    async delete(id: string): Promise<User | undefined> {
+        const user = await this.usersRepo.findOne(id);
+        if (user) {
+            await this.usersRepo.delete(user);
+            return user;
         }
-
         return undefined;
     }
 }

@@ -1,9 +1,9 @@
-import { Controller, Get, Post, Delete, Param, Body, Patch, Options, Req, Res, NotFoundException } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
+import { Controller, Get, Post, Delete, Param, Body, Patch, Options, Res, NotFoundException } from '@nestjs/common';
+import { UserDto } from './dto/user.dto';
 import { UsersService } from './users.service';
 import { User } from './interfaces/user.interface';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { Response } from 'express';
+import { get } from 'http';
 
 @Controller("users")
 export class UsersController {
@@ -11,13 +11,13 @@ export class UsersController {
     constructor(private usersService: UsersService) { }
 
     @Get()
-    getAll(): User[] {
+    getAll(): Promise<User[]> {
         return this.usersService.getAll();
     }
 
     @Get(":id")
-    getOne(@Param('id') id: string): User {
-        const user = this.usersService.getOne(id);
+    async getOne(@Param('id') id: string): Promise<User> {
+        const user = await this.usersService.getOne(id);
         if (!user) {
             throw new NotFoundException();
         }
@@ -26,9 +26,9 @@ export class UsersController {
     }
 
     @Patch(":id")
-    update(@Param("id") id: string, @Body() data: UpdateUserDto): User {
-        const user = <User>{ name: data.name };
-        const updatedUser = this.usersService.update(id, user);
+    async update(@Param("id") id: string, @Body() data: UserDto): Promise<User> {
+
+        const updatedUser = await this.usersService.update(id, data);
         if (!updatedUser) {
             throw new NotFoundException();
         }
@@ -37,9 +37,8 @@ export class UsersController {
     }
 
     @Post()
-    create(@Body() data: CreateUserDto): User {
-        const user = <User>{ id: data.id, name: data.name };
-        return this.usersService.create(user);
+    create(@Body() data: UserDto): Promise<User> {
+        return this.usersService.create(data);
     }
 
     @Delete(":id")
@@ -49,8 +48,9 @@ export class UsersController {
             throw new NotFoundException();
         }
 
-        return user;
+        return undefined;
     }
+
 
     @Options()
     acceptVerbs(@Res() res: Response): void {
@@ -58,4 +58,5 @@ export class UsersController {
             .status(204)
             .send();
     }
+
 }
