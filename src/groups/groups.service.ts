@@ -1,17 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Group } from './entities/group.entity';
+import { MongoRepository } from 'typeorm';
+import { Group } from './schemas/group.schema';
 import { UsersService } from 'src/users/users.service';
-import { User } from 'src/common/interfaces/user.interface';
-import { GroupDetails } from 'src/common/interfaces/group.interface';
+import { User } from 'src/users/schemas/user.schema';
 
 @Injectable()
 export class GroupsService {
 
     constructor(
-        @InjectRepository(Group)
-        private groupsRepo: Repository<Group>,
+        @InjectRepository(Group) private groupsRepo: MongoRepository<Group>,
+        @InjectModel(Group.name) private userModel: Model<Group>,
         private usersService: UsersService
     ) { }
 
@@ -19,7 +18,7 @@ export class GroupsService {
         return this.groupsRepo.find();
     }
 
-    getOne(id: string): Promise<GroupDetails> {
+    getOne(id: string): Promise<Group> {
         return this.groupsRepo.findOne(id, { relations: ["members"] });
     }
 

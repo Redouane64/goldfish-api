@@ -1,10 +1,12 @@
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { User } from "./entities/user.entity";
+import { MongoRepository } from "typeorm";
+import { User } from "./schemas/user.schema";
 
 export class FriendsService {
 
-    constructor(@InjectRepository(User) private usersRepo: Repository<User>) { }
+    constructor(
+        @InjectRepository(User) private usersRepo: MongoRepository<User>,
+        @InjectModel(User.name) private userModel: Model<User>) { }
 
     async getFriends(userId: string): Promise<User[] | undefined> {
         const user = await this.usersRepo.findOne(userId, { relations: ["friends"] });

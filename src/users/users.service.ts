@@ -1,12 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from './entities/user.entity';
-import { Repository } from 'typeorm';
+import { User } from './schemas/user.schema';
+import { MongoRepository } from 'typeorm';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class UsersService {
 
-    constructor(@InjectRepository(User) private usersRepo: Repository<User>) { }
+    constructor(
+        @InjectRepository(User) private usersRepo: MongoRepository<User>,
+        @InjectModel(User.name) private userModel: Model<User>) { }
 
     getAll(): Promise<User[]> {
         return this.usersRepo.find();
@@ -18,6 +22,7 @@ export class UsersService {
 
     create(data: { firstName: string, lastName: string }): Promise<User> {
         const user = new User();
+
         user.firstName = data.firstName;
         user.lastName = data.lastName;
 

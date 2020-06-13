@@ -1,13 +1,14 @@
-import { Controller, Get, Post, Delete, Param, Body, Patch, Options, Res, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Param, Body, Patch, NotFoundException } from '@nestjs/common';
 import { UserDto } from './dto/user.dto';
 import { UsersService } from './users.service';
-import { User } from '../common/interfaces/user.interface';
-import { Response } from 'express';
+import { User } from './schemas/user.schema';
 
 @Controller("users")
 export class UsersController {
 
-    constructor(private usersService: UsersService) { }
+    constructor(
+        private usersService: UsersService
+    ) { }
 
     @Get()
     getAll(): Promise<User[]> {
@@ -48,14 +49,6 @@ export class UsersController {
         }
 
         return undefined;
-    }
-
-
-    @Options()
-    acceptVerbs(@Res() res: Response): void {
-        res.header("Allow", "GET, POST, PATCH, DELETE, OPTIONS")
-            .status(204)
-            .send();
     }
 
 }
