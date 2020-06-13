@@ -1,9 +1,8 @@
 import { Controller, Get, Post, Delete, Param, Body, Patch, Options, Res, NotFoundException } from '@nestjs/common';
 import { UserDto } from './dto/user.dto';
 import { UsersService } from './users.service';
-import { User } from './interfaces/user.interface';
+import { User } from '../common/interfaces/user.interface';
 import { Response } from 'express';
-import { get } from 'http';
 
 @Controller("users")
 export class UsersController {

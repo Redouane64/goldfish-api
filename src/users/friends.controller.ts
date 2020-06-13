@@ -1,5 +1,5 @@
 import { Controller, Param, Get, NotFoundException, Put, Delete } from "@nestjs/common";
-import { User } from "./interfaces/user.interface";
+import { User } from "../common/interfaces/user.interface";
 import { FriendsService } from "./friends.service";
 
 @Controller("users/:id/friends")

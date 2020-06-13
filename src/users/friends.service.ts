@@ -17,11 +17,18 @@ export class FriendsService {
     }
 
     async addFriend(data: { id: string, friendId: string }): Promise<User[]> {
-        const user = await this.usersRepo.findOne(data.id);
-        const friend = await this.usersRepo.findOne(data.friendId);
+        const user = await this.usersRepo.findOne(data.id, { relations: ["friends"] });
+        const friend = await this.usersRepo.findOne(data.friendId, { relations: ["friends"] });
 
-        user.friends = [];
-        friend.friends = [];
+        // avoid friendship duplication.
+        user.friends = user.friends.filter(u => {
+            u.id !== friend.id
+        });
+
+        friend.friends = friend.friends.filter(u => {
+            u.id !== user.id
+        });
+
         user.friends.push(friend);
         friend.friends.push(user);
 
