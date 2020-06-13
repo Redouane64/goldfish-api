@@ -54,7 +54,7 @@ export class UsersController {
 
     @Options()
     acceptVerbs(@Res() res: Response): void {
-        res.header("allow", "GET, POST, PATCH, DELETE, OPTIONS")
+        res.header("Allow", "GET, POST, PATCH, DELETE, OPTIONS")
             .status(204)
             .send();
     }
