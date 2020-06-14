@@ -26,8 +26,7 @@ export class FriendsService {
         user.friends.push(friend);
         friend.friends.push(user);
 
-        await user.save().then(() => friend.save())
-        return user;
+        return await user.save().then(() => friend.save())
     }
 
     async deleteFriend(data: { id: string, friendId: string }): Promise<User> {
@@ -41,7 +40,6 @@ export class FriendsService {
         user.friends = user.friends.filter(u => u.id !== data.friendId);
         friend.friends = friend.friends.filter(u => u.id !== data.id);
 
-        await user.save().then(() => friend.save())
-        return user;
+        return await user.save().then(() => friend.save())
     }
 }

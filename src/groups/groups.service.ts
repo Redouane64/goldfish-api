@@ -1,37 +1,60 @@
 import { Injectable } from '@nestjs/common';
 import { Group } from 'src/common/interfaces/group.interface';
-import { User } from 'src/common/interfaces/user.interface';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class GroupsService {
 
     constructor(
-        @InjectModel("Group") private usersRepo: Model<Group>
+        @InjectModel("Group") private groups: Model<Group>,
+        private usersService: UsersService
     ) { }
 
-    getAll(): Promise<Group[]> {
-        return undefined;
+    async getAll(): Promise<Group[]> {
+        return await this.groups.find();
     }
 
-    getOne(): Promise<Group> {
-        return undefined;
+    async getOne(id: string): Promise<Group> {
+        return await this.groups.findOne({ _id: id }).populate("members");
     }
 
-    createGroup(): Promise<Group> {
-        return undefined;
+    createGroup(data: { name: string }): Promise<Group> {
+        return new this.groups(data).save();
     }
 
-    async updateGroup(): Promise<Group | undefined> {
-        return undefined;
+    async updateGroup(id: string, data: { name: string }): Promise<Group> {
+        return this.groups.findOneAndUpdate({ _id: id }, data, { new: false });
     }
 
-    async addMember(): Promise<User[]> {
-        return undefined;
+    async addMember(id: string, data: { userId: string }): Promise<Group> {
+
+        const group = await this.groups.findOne({ _id: id }).populate("members");
+        if (!group) {
+            return undefined;
+        }
+
+        const member = await this.usersService.getOneWithoutFriends(data.userId);
+        if (!member) {
+            return undefined;
+        }
+
+        // avoid duplicating members.
+        group.members = group.members.filter(m => m.id !== data.userId);
+
+        group.members.push(member);
+        return await group.save();
     }
 
-    async deleteMember(): Promise<User[]> {
-        return undefined;
+    async deleteMember(id: string, data: { userId: string }): Promise<Group> {
+        const group = await this.groups.findOne({ _id: id }).populate("members");
+        if (!group) {
+            return undefined;
+        }
+
+        group.members = group.members.filter(m => m.id !== data.userId);
+
+        return await group.save();
     }
 }

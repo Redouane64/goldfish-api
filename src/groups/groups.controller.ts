@@ -1,8 +1,7 @@
-import { Controller, Param, Get, Post, Body, Patch, Delete, Put } from '@nestjs/common';
+import { Controller, Param, Get, Post, Body, Patch, Delete, Put, NotFoundException } from '@nestjs/common';
 import { GroupDto } from './dto/create-group.dto';
 import { GroupsService } from './groups.service';
 import { Group } from 'src/common/interfaces/group.interface';
-import { User } from 'src/common/interfaces/user.interface';
 
 @Controller('groups')
 export class GroupsController {
@@ -11,31 +10,43 @@ export class GroupsController {
 
     @Get()
     getAll(): Promise<Group[]> {
-        return undefined;
+        return this.groupsService.getAll();
     }
 
     @Get(":id")
     async getOne(@Param("id") id: string): Promise<Group> {
-        return undefined;
+        return this.groupsService.getOne(id);
     }
 
     @Post()
     create(@Body() data: GroupDto): Promise<Group> {
-        return undefined;
+        return this.groupsService.createGroup(data);
     }
 
     @Patch(":id")
     async update(@Param("id") id: string, @Body() data: GroupDto): Promise<Group> {
-        return undefined;
+        const group = await this.groupsService.updateGroup(id, data);
+        if (!group) {
+            throw new NotFoundException();
+        }
+        return group;
     }
 
     @Put(":id")
-    addMember(@Param("id") id: string, @Body() data: { userId: string }): Promise<User[]> {
-        return undefined;
+    async addMember(@Param("id") id: string, @Body() data: { userId: string }): Promise<Group> {
+        const group = await this.groupsService.addMember(id, data);
+        if (!group) {
+            throw new NotFoundException();
+        }
+        return group;
     }
 
     @Delete(":id")
-    deleteMember(@Param("id") id: string, @Body() data: { userId: string }): Promise<User[]> {
-        return undefined;
+    async deleteMember(@Param("id") id: string, @Body() data: { userId: string }): Promise<Group> {
+        const group = await this.groupsService.deleteMember(id, data);
+        if (!group) {
+            throw new NotFoundException();
+        }
+        return group;
     }
 }

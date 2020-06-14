@@ -7,27 +7,31 @@ import { User } from 'src/common/interfaces/user.interface';
 export class UsersService {
 
     constructor(
-        @InjectModel("User") private usersRepo: Model<User>
+        @InjectModel("User") private users: Model<User>
     ) { }
 
     async getAll(): Promise<User[]> {
-        return await this.usersRepo.find();
+        return await this.users.find();
     }
 
     async getOne(id: string): Promise<User> {
-        return await this.usersRepo.findOne({ _id: id }).populate("friends");
+        return await this.users.findOne({ _id: id }).populate("friends");
+    }
+
+    async getOneWithoutFriends(id: string): Promise<User> {
+        return await this.users.findOne({ _id: id });
     }
 
     create(data: { firstName: string, lastName: string }): Promise<User> {
-        const user = new this.usersRepo(data);
+        const user = new this.users(data);
         return user.save();
     }
 
     async update(id: string, data: { firstName: string, lastName: string }): Promise<User> {
-        return await this.usersRepo.findByIdAndUpdate(id, data, { new: false });
+        return await this.users.findByIdAndUpdate(id, data).populate("friends");
     }
 
     async delete(id: string): Promise<User> {
-        return await this.usersRepo.findByIdAndRemove(id);
+        return await this.users.findByIdAndRemove(id);
     }
 }
