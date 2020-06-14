@@ -25,7 +25,7 @@ export class GroupsService {
     }
 
     async updateGroup(id: string, data: { name: string }): Promise<Group> {
-        return this.groups.findOneAndUpdate({ _id: id }, data, { new: false });
+        return this.groups.findOneAndUpdate({ _id: id }, data, { new: true });
     }
 
     async addMember(id: string, data: { userId: string }): Promise<Group> {

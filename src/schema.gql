@@ -9,15 +9,27 @@ type User {
   friends: [User!]!
 }
 
+type Group {
+  _id: String!
+  name: String!
+  members: [User!]!
+}
+
 type Query {
   user(id: String!): User!
   users: [User!]!
+  groups: [Group!]!
+  group(id: String!): Group!
 }
 
 type Mutation {
-  create(lastName: String!, firstName: String!): User!
-  update(lastName: String!, firstName: String!, id: String!): User!
-  delete(id: String!): User!
+  createUser(lastName: String!, firstName: String!): User!
+  updateUser(lastName: String!, firstName: String!, id: String!): User!
+  deleteUser(id: String!): User!
   friend(friendId: String!, id: String!): User!
   unfriend(friendId: String!, id: String!): User!
+  createGroup(name: String!): Group!
+  updateGroup(name: String!, id: String!): Group!
+  addMember(userId: String!, id: String!): Group!
+  deleteMember(userId: String!, id: String!): Group!
 }

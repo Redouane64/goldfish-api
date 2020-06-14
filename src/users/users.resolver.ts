@@ -21,12 +21,12 @@ export class UsersResolver {
         return await this.usersService.getAll(true);
     }
 
-    @Mutation(() => User, { name: "create" })
+    @Mutation(() => User, { name: "createUser" })
     async createUser(@Args("firstName") firstName: string, @Args("lastName") lastName: string): Promise<User> {
         return await this.usersService.create({ firstName, lastName });
     }
 
-    @Mutation(() => User, { name: "update" })
+    @Mutation(() => User, { name: "updateUser" })
     async updateUser(
         @Args("id") id: string,
         @Args("firstName") firstName: string,
@@ -34,7 +34,7 @@ export class UsersResolver {
         return this.usersService.update(id, { firstName, lastName });
     }
 
-    @Mutation(() => User, { name: "delete" })
+    @Mutation(() => User, { name: "deleteUser" })
     async deleteUser(
         @Args("id") id: string,
     ): Promise<User> {
