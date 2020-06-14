@@ -1,0 +1,23 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type User {
+  _id: String!
+  firstName: String!
+  lastName: String!
+  friends: [User!]!
+}
+
+type Query {
+  user(id: String!): User!
+  users: [User!]!
+}
+
+type Mutation {
+  create(lastName: String!, firstName: String!): User!
+  update(lastName: String!, firstName: String!, id: String!): User!
+  delete(id: String!): User!
+  friend(friendId: String!, id: String!): User!
+  unfriend(friendId: String!, id: String!): User!
+}

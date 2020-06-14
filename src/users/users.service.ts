@@ -10,7 +10,10 @@ export class UsersService {
         @InjectModel("User") private users: Model<User>
     ) { }
 
-    async getAll(): Promise<User[]> {
+    async getAll(includeFriends = false): Promise<User[]> {
+        if (includeFriends) {
+            return await this.users.find().populate("friends");
+        }
         return await this.users.find();
     }
 
@@ -28,7 +31,7 @@ export class UsersService {
     }
 
     async update(id: string, data: { firstName: string, lastName: string }): Promise<User> {
-        return await this.users.findByIdAndUpdate(id, data).populate("friends");
+        return await this.users.findByIdAndUpdate(id, data, { new: true }).populate("friends");
     }
 
     async delete(id: string): Promise<User> {
