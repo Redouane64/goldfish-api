@@ -1,8 +1,8 @@
-import { Controller, Param, Get, Post, Body, Patch, Delete, NotFoundException, Put } from '@nestjs/common';
+import { Controller, Param, Get, Post, Body, Patch, Delete, Put } from '@nestjs/common';
 import { GroupDto } from './dto/create-group.dto';
 import { GroupsService } from './groups.service';
-import { Group } from './schemas/group.schema';
-import { User } from 'src/users/schemas/user.schema';
+import { Group } from 'src/common/interfaces/group.interface';
+import { User } from 'src/common/interfaces/user.interface';
 
 @Controller('groups')
 export class GroupsController {
@@ -11,41 +11,31 @@ export class GroupsController {
 
     @Get()
     getAll(): Promise<Group[]> {
-        return this.groupsService.getAll();
+        return undefined;
     }
 
     @Get(":id")
     async getOne(@Param("id") id: string): Promise<Group> {
-        const group = await this.groupsService.getOne(id);
-        if (!group) {
-            throw new NotFoundException();
-        }
-
-        return group;
+        return undefined;
     }
 
     @Post()
     create(@Body() data: GroupDto): Promise<Group> {
-        return this.groupsService.createGroup(data);
+        return undefined;
     }
 
     @Patch(":id")
     async update(@Param("id") id: string, @Body() data: GroupDto): Promise<Group> {
-        const group = await this.groupsService.updateGroup(id, data);
-        if (!group) {
-            throw new NotFoundException();
-        }
-
-        return group;
+        return undefined;
     }
 
     @Put(":id")
     addMember(@Param("id") id: string, @Body() data: { userId: string }): Promise<User[]> {
-        return this.groupsService.addMember({ groupId: id, userId: data.userId });
+        return undefined;
     }
 
     @Delete(":id")
     deleteMember(@Param("id") id: string, @Body() data: { userId: string }): Promise<User[]> {
-        return this.groupsService.deleteMember({ groupId: id, userId: data.userId });
+        return undefined;
     }
 }

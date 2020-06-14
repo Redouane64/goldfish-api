@@ -1,12 +1,8 @@
 import { User } from "./user.interface";
+import { Document } from "mongoose";
 
-export interface Group {
-    id: string;
-    name: string;
-}
-
-export interface GroupDetails {
-    id: string;
+export interface Group extends Document {
+    _id: string;
     name: string;
     members: User[];
 }

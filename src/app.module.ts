@@ -9,7 +9,7 @@ import { MongooseModule } from '@nestjs/mongoose';
   imports: [
     UsersModule,
     GroupsModule,
-    MongooseModule.forRoot("mongodb://localhost/Goldfish")
+    MongooseModule.forRoot("mongodb://localhost:27017/Goldfish")
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,57 +1,47 @@
-import { InjectRepository } from "@nestjs/typeorm";
-import { MongoRepository } from "typeorm";
-import { User } from "./schemas/user.schema";
+import { InjectModel } from "@nestjs/mongoose";
+import { User } from "src/common/interfaces/user.interface";
+import { Model } from "mongoose";
 
 export class FriendsService {
 
     constructor(
-        @InjectRepository(User) private usersRepo: MongoRepository<User>,
-        @InjectModel(User.name) private userModel: Model<User>) { }
+        @InjectModel("User") private users: Model<User>
+    ) { }
 
-    async getFriends(userId: string): Promise<User[] | undefined> {
-        const user = await this.usersRepo.findOne(userId, { relations: ["friends"] });
+    async addFriend(data: { id: string, friendId: string }): Promise<User> {
+        const user = await this.users.findOne({ _id: data.id }).populate("friends");
+        const friend = await this.users.findOne({ _id: data.friendId }).populate("friends");
 
-        if (!user) {
+        if (!user || !friend) {
             return undefined;
         }
 
-        return user.friends;
-    }
+        if (data.id === data.friendId) {
+            return user;
+        }
 
-    async addFriend(data: { id: string, friendId: string }): Promise<User[]> {
-        const user = await this.usersRepo.findOne(data.id, { relations: ["friends"] });
-        const friend = await this.usersRepo.findOne(data.friendId, { relations: ["friends"] });
-
-        // avoid friendship duplication.
-        user.friends = user.friends.filter(u => {
-            u.id !== friend.id
-        });
-
-        friend.friends = friend.friends.filter(u => {
-            u.id !== user.id
-        });
+        user.friends = user.friends.filter(u => u.id !== data.friendId);
+        friend.friends = friend.friends.filter(u => u.id !== data.id);
 
         user.friends.push(friend);
         friend.friends.push(user);
 
-        await this.usersRepo.save([user, friend]);
-        return (await this.usersRepo.findOne(data.id, { relations: ["friends"] })).friends;
+        await user.save().then(() => friend.save())
+        return user;
     }
 
-    async deleteFriend(data: { id: string, friendId: string }): Promise<User[]> {
-        const user = await this.usersRepo.findOne(data.id, { relations: ["friends"] });
-        const friend = await this.usersRepo.findOne(data.friendId, { relations: ["friends"] });
+    async deleteFriend(data: { id: string, friendId: string }): Promise<User> {
+        const user = await this.users.findOne({ _id: data.id }).populate("friends");
+        const friend = await this.users.findOne({ _id: data.friendId }).populate("friends");
 
-        user.friends = user.friends.filter(u => {
-            u.id !== friend.id
-        });
+        if (!user || !friend) {
+            return undefined;
+        }
 
-        friend.friends = friend.friends.filter(u => {
-            u.id !== user.id
-        });
+        user.friends = user.friends.filter(u => u.id !== data.friendId);
+        friend.friends = friend.friends.filter(u => u.id !== data.id);
 
-        await this.usersRepo.save([user, friend]);
-
-        return user.friends;
+        await user.save().then(() => friend.save())
+        return user;
     }
 }
