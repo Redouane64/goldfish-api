@@ -15,7 +15,7 @@ export class UsersService {
     }
 
     async getOne(id: string): Promise<User> {
-        return await this.usersRepo.findOne({ _id: id });
+        return await this.usersRepo.findOne({ _id: id }).populate("friends");
     }
 
     create(data: { firstName: string, lastName: string }): Promise<User> {
